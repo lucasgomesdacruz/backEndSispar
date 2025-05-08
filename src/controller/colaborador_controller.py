@@ -73,50 +73,56 @@ def atualizar_dados_colaborador(id_colaborador):
 
 @bp_colaborador.route('/login', methods=['POST'])
 def login():
-    
     dados_requisicao = request.get_json()
     email = dados_requisicao.get('email')
     senha = dados_requisicao.get('senha')
     
     if not email or not senha:
         return jsonify({'mensagem': 'Todos os campos devem ser preenchidos'}), 400
-                                        # Query para o banco de dados
+
+    # Query para o banco de dados
     colaborador = db.session.execute(
         db.select(Colaborador).where(Colaborador.email == email)
-    ).scalar() # Retornar um único resultado ou None
+    ).scalar()  # Retorna um único resultado ou None
     
     if not colaborador:
         return jsonify({'mensagem': 'O usuário não foi encontrado'}), 404
     
-    
-    # colaborador = colaborador.to_dict()    
-    
-    # if colaborador.get('email') == email and checar_senha(senha, colaborador.get('senha')):
-    #     return jsonify({'mensagem': 'Login realizado com sucesso'}), 200
-    
-   # Verifica senha diretamente no modelo original (sem usar .to_dict())
+    # Verifica a senha diretamente no modelo original (sem usar .to_dict())
     if checar_senha(senha, colaborador.senha):
-        session['colaborador_id'] = colaborador.id  # Salva na sessão
+        session['colaborador_id'] = colaborador.id  # Salva o ID do colaborador na sessão
+        print("Session salva?", 'colaborador_id' in session)  # Verifique se o ID foi salvo
         return jsonify({'mensagem': 'Login realizado com sucesso'}), 200
     
+    # Caso a senha esteja incorreta
     print("Colaborador logado:", colaborador.id)
     print("Session salva?", 'colaborador_id' in session)
 
     return jsonify({'mensagem': 'Senha incorreta'}), 401
-    
+
     
 @bp_colaborador.route('/perfil', methods=['GET'])
 def pegar_perfil_colaborador():
     colaborador_id = session.get('colaborador_id')
+    
+    # Verifica se o colaborador_id está presente na sessão
     print("Session no perfil:", dict(session))
     print("Colaborador ID:", colaborador_id)
+    
+    if not colaborador_id:
+        # Se não houver colaborador_id na sessão, retorna 401 (não autorizado)
+        return jsonify({'mensagem': 'Colaborador não logado'}), 401
 
+    # Busca o colaborador no banco de dados usando o ID da sessão
     colaborador = db.session.get(Colaborador, colaborador_id)
 
+    # Se o colaborador não for encontrado, retorna 404 (não encontrado)
     if not colaborador:
         return jsonify({'mensagem': 'Colaborador não encontrado'}), 404
 
+    # Retorna as informações do colaborador no formato JSON
     return jsonify({
+        'id': colaborador.id,
         'nome': colaborador.nome,
         'cargo': colaborador.cargo
     }), 200

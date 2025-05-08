@@ -28,7 +28,7 @@ def criar_reembolso():
             valor_km=data.get('valor_km'),
             valor_faturado=data['valor_faturado'],
             despesa=data.get('despesa'),
-            id_colaborador=data['id_colaborador'],
+            id_colaborador=33,
             status=data.get('status', 'Em analise')
         )
         db.session.add(novo_reembolso)

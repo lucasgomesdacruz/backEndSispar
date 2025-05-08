@@ -4,6 +4,7 @@ from flask import Flask
 from src.controller.colaborador_controller import bp_colaborador
 from src.controller.reembolso_controller import bp_reembolso 
 
+
 from src.model import db
 from config import Config
 from flask_cors import CORS
@@ -27,7 +28,8 @@ swagger_config = {
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = os.getenv('SECRET_KEY')
+    app.secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')
+    CORS(app, supports_credentials=True)  # Permite enviar cookies de sessão
     # CORS(app, origins='*')
     # CORS(app, origins=['http://localhost:5173'])
     # CORS(app, origins=['http://localhost:5173'], supports_credentials=True)
@@ -46,6 +48,11 @@ def create_app():
     app.config.from_object(Config) # Trouxemos a configuração do ambiente de desenvolvimento
     db.init_app(app) # Se inicia a conexão com o banco de dados
     Swagger(app, config=swagger_config) # <- Instanciando o Swagger e adicionando as configurações
+    
+    app.config['SESSION_PERMANENT'] = False
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # ou 'None' se estiver em domínios diferentes + HTTPS
+    app.config['SESSION_COOKIE_SECURE'] = False 
     
     @app.after_request
     def after_request(response):
