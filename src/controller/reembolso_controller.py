@@ -37,6 +37,36 @@ def criar_reembolso():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
+    
+@bp_reembolso.route('/reembolsos/<int:num_prestacao>', methods=['GET'])
+def visualizar_reembolso(num_prestacao):
+    try:
+        reembolso = Reembolso.query.filter_by(num_prestacao=num_prestacao).first()
+        if not reembolso:
+            return jsonify({'error': 'Reembolso não encontrado'}), 404
+
+        return jsonify({
+            'id': reembolso.id,
+            'colaborador': reembolso.colaborador,
+            'empresa': reembolso.empresa,
+            'num_prestacao': reembolso.num_prestacao,
+            'descricao': reembolso.descricao,
+            'data': reembolso.data.strftime('%Y-%m-%d'),
+            'tipo_reembolso': reembolso.tipo_reembolso,
+            'centro_custo': reembolso.centro_custo,
+            'ordem_interna': reembolso.ordem_interna,
+            'divisao': reembolso.divisao,
+            'pep': reembolso.pep,
+            'moeda': reembolso.moeda,
+            'distancia_km': reembolso.distancia_km,
+            'valor_km': reembolso.valor_km,
+            'valor_faturado': reembolso.valor_faturado,
+            'despesa': reembolso.despesa,
+            'id_colaborador': reembolso.id_colaborador,
+            'status': reembolso.status
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # Listar todos os reembolsos
 @bp_reembolso.route('/reembolsos', methods=['GET'])
