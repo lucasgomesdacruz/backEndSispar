@@ -5,11 +5,15 @@ from src.controller.colaborador_controller import bp_colaborador
 from src.controller.reembolso_controller import bp_reembolso 
 
 
+
 from src.model import db
 from config import Config
 from flask_cors import CORS
 from flasgger import Swagger
 import os
+
+from dotenv import load_dotenv
+load_dotenv()
 
 swagger_config = {
     "headers": [],
@@ -35,18 +39,12 @@ def create_app():
     # CORS(app, origins=['http://localhost:5173'], supports_credentials=True)
     CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
     
-
-
-    
-
-
-
-    
     app.register_blueprint(bp_reembolso)
     app.register_blueprint(bp_colaborador)
     
     app.config.from_object(Config) # Trouxemos a configuração do ambiente de desenvolvimento
     db.init_app(app) # Se inicia a conexão com o banco de dados
+
     Swagger(app, config=swagger_config) # <- Instanciando o Swagger e adicionando as configurações
     
     app.config['SESSION_PERMANENT'] = False
