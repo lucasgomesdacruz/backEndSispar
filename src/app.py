@@ -38,7 +38,9 @@ def create_app():
     # CORS(app, origins='*')
     # CORS(app, origins=['http://localhost:5173'])
     # CORS(app, origins=['http://localhost:5173'], supports_credentials=True)
-    CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+    # CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+    CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://sispar-omega.vercel.app"]}}, supports_credentials=True)
+
     
     app.register_blueprint(bp_reembolso)
     app.register_blueprint(bp_colaborador)
