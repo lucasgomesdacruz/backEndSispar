@@ -32,7 +32,8 @@ swagger_config = {
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')
+    app.secret_key = os.getenv('SECRET_KEY')
+    # app.secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')
     CORS(app, supports_credentials=True)  # Permite enviar cookies de sessão
     # CORS(app, origins='*')
     # CORS(app, origins=['http://localhost:5173'])
