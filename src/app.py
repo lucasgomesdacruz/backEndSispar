@@ -12,6 +12,7 @@ from flask_cors import CORS
 from flasgger import Swagger
 import os
 
+# Carregando variáveis de ambiente
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -47,7 +48,7 @@ def create_app():
 
     Swagger(app, config=swagger_config) # <- Instanciando o Swagger e adicionando as configurações
     
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL_PROD1')
+    # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL_PROD1')
 
     
     app.config['SESSION_PERMANENT'] = False
