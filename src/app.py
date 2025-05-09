@@ -1,6 +1,6 @@
 # RESPONSÁVEL PELA CRIAÇÃO DA INSTÂNCIA E CONFIGURAR O FLASK
 # CREATE_APP() -> 
-from flask import Flask
+from flask import Flask, request
 from src.controller.colaborador_controller import bp_colaborador
 from src.controller.reembolso_controller import bp_reembolso 
 
@@ -61,12 +61,22 @@ def create_app():
     app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Para permitir cookies cross-origin
     app.config['SESSION_COOKIE_SECURE'] = True       # Necessário se o backend usar HTTPS
     
+    # @app.after_request
+    # def after_request(response):
+    #     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+    #     response.headers.add('Access-Control-Allow-Credentials', 'true')
+    #     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    #     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+    #     return response
+    
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+        origin = request.headers.get('Origin')
+        if origin in ['http://localhost:5173', 'https://sispar-omega.vercel.app']:
+            response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
         return response
     
     with app.app_context():
