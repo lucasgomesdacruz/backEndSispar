@@ -156,6 +156,7 @@ def login():
 @bp_colaborador.route('/perfil', methods=['GET'])
 def pegar_perfil_colaborador():
     colaborador_id = session.get('colaborador_id')
+    session.permanent = True 
     
     # Verifica se o colaborador_id está presente na sessão
     print("Session no perfil:", dict(session))
@@ -167,6 +168,7 @@ def pegar_perfil_colaborador():
 
     # Busca o colaborador no banco de dados usando o ID da sessão
     colaborador = db.session.get(Colaborador, colaborador_id)
+    colaborador = db.session.query(Colaborador).filter_by(id=colaborador_id).first()
 
     # Se o colaborador não for encontrado, retorna 404 (não encontrado)
     if not colaborador:
