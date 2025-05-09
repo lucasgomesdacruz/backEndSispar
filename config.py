@@ -7,8 +7,9 @@ load_dotenv() # Carrega as variaveis de ambiente para este arquivo
 
 class Config():    
     # SQLALCHEMY_DATABASE_URI = environ.get('URL_DATABASE_PROD')
-    SQLALCHEMY_DATABASE_URI = environ.get('URL_DATABASE_DEV1')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') 
+    SQLALCHEMY_DATABASE_URI = environ.get('URL_DATABASE_PROD')
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
-    print("DATABASE URI:", environ.get("URL_DATABASE_DEV1"))
+    print("DATABASE URI:", environ.get("URL_DATABASE_PROD"))
     
 
