@@ -146,6 +146,7 @@ def login():
     print("Hash no banco:", repr(colaborador.senha))  # mostra se tem \x
 
     if checar_senha(senha, colaborador.senha):
+        session.permanent = True  # 🔥 ESSENCIAL PARA MANTER A SESSÃO
         session['colaborador_id'] = colaborador.id
         return jsonify({'mensagem': 'Login realizado com sucesso'}), 200
 
