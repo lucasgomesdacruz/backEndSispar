@@ -47,6 +47,9 @@ def create_app():
 
     Swagger(app, config=swagger_config) # <- Instanciando o Swagger e adicionando as configurações
     
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+
+    
     app.config['SESSION_PERMANENT'] = False
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # ou 'None' se estiver em domínios diferentes + HTTPS
