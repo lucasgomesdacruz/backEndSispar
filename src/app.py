@@ -3,6 +3,7 @@
 from flask import Flask, request
 from src.controller.colaborador_controller import bp_colaborador
 from src.controller.reembolso_controller import bp_reembolso 
+from flask_session import Session
 
 
 
@@ -34,7 +35,7 @@ swagger_config = {
 def create_app():
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY')
-    CORS(app, supports_credentials=True)  # Permite enviar cookies de sessão
+    # CORS(app, supports_credentials=True)  # Permite enviar cookies de sessão
     # CORS(app, origins='*')
     # CORS(app, origins=['http://localhost:5173'])
     # CORS(app, origins=['http://localhost:5173'], supports_credentials=True)
@@ -60,6 +61,8 @@ def create_app():
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # ou 'None' se estiver em domínios diferentes + HTTPS
     app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Para permitir cookies cross-origin
     app.config['SESSION_COOKIE_SECURE'] = True       # Necessário se o backend usar HTTPS
+    
+    Session(app)
     
     # @app.after_request
     # def after_request(response):
