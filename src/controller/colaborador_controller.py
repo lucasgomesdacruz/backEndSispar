@@ -168,7 +168,7 @@ def pegar_perfil_colaborador():
 
     # Busca o colaborador no banco de dados usando o ID da sessão
     colaborador = db.session.get(Colaborador, colaborador_id)
-    colaborador = db.session.query(Colaborador).filter_by(id=colaborador_id).first()
+    # colaborador = db.session.query(Colaborador).filter_by(id=colaborador_id).first()
 
     # Se o colaborador não for encontrado, retorna 404 (não encontrado)
     if not colaborador:
