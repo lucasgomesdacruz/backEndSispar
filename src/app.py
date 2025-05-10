@@ -1,8 +1,11 @@
 # RESPONSÁVEL PELA CRIAÇÃO DA INSTÂNCIA E CONFIGURAR O FLASK
 # CREATE_APP() -> 
-from flask import Flask
+from flask import Flask, request
 from src.controller.colaborador_controller import bp_colaborador
 from src.controller.reembolso_controller import bp_reembolso 
+from flask_session import Session
+
+from datetime import timedelta
 
 
 
@@ -12,6 +15,7 @@ from flask_cors import CORS
 from flasgger import Swagger
 import os
 
+# Carregando variáveis de ambiente
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -33,11 +37,9 @@ swagger_config = {
 def create_app():
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY')
-    CORS(app, supports_credentials=True)  # Permite enviar cookies de sessão
-    # CORS(app, origins='*')
-    # CORS(app, origins=['http://localhost:5173'])
-    # CORS(app, origins=['http://localhost:5173'], supports_credentials=True)
-    CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+    # CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+    CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://sispar-omega.vercel.app"]}}, supports_credentials=True)
+
     
     app.register_blueprint(bp_reembolso)
     app.register_blueprint(bp_colaborador)
@@ -47,20 +49,32 @@ def create_app():
 
     Swagger(app, config=swagger_config) # <- Instanciando o Swagger e adicionando as configurações
     
+<<<<<<< HEAD
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL_DEV1')
+=======
+    
+    app.secret_key = os.environ.get('SECRET_KEY', 'chave-secreta-de-desenvolvimento')
+>>>>>>> e39063b938459bbb6eada149ebc77fe9e64687a2
 
     
     app.config['SESSION_PERMANENT'] = False
+    app.permanent_session_lifetime = timedelta(days=7)
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # ou 'None' se estiver em domínios diferentes + HTTPS
-    app.config['SESSION_COOKIE_SECURE'] = False 
+    # app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # ou 'None' se estiver em domínios diferentes + HTTPS
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Para permitir cookies cross-origin
+    app.config['SESSION_COOKIE_SECURE'] = True       # Necessário se o backend usar HTTPS
+    
+    Session(app)
+    
     
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+        origin = request.headers.get('Origin')
+        if origin in ['http://localhost:5173', 'https://sispar-omega.vercel.app']:
+            response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
         return response
     
     with app.app_context():

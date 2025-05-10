@@ -4,6 +4,7 @@ from src.model.colaborador_model import Colaborador
 from src.model import db
 from src.security.security import hash_senha, checar_senha
 from flasgger import swag_from
+import bcrypt
 
 bp_colaborador = Blueprint('colaborador', __name__, url_prefix='/colaborador')
 
@@ -76,34 +77,47 @@ def login():
     dados_requisicao = request.get_json()
     email = dados_requisicao.get('email')
     senha = dados_requisicao.get('senha')
-    
+
     if not email or not senha:
         return jsonify({'mensagem': 'Todos os campos devem ser preenchidos'}), 400
 
-    # Query para o banco de dados
     colaborador = db.session.execute(
         db.select(Colaborador).where(Colaborador.email == email)
-    ).scalar()  # Retorna um único resultado ou None
-    
+    ).scalar()
+
     if not colaborador:
         return jsonify({'mensagem': 'O usuário não foi encontrado'}), 404
-    
-    # Verifica a senha diretamente no modelo original (sem usar .to_dict())
+
+    def checar_senha(senha, senha_hash):
+        if not senha_hash:
+            return False
+
+        # Verifica se o hash está em string hexadecimal e converte
+        if isinstance(senha_hash, str):
+            if senha_hash.startswith('\\x') or senha_hash.startswith('0x'):
+                senha_hash = bytes.fromhex(senha_hash[2:])
+            else:
+                senha_hash = senha_hash.encode('utf-8')
+
+        return bcrypt.checkpw(senha.encode('utf-8'), senha_hash)
+
+    # Debug prints úteis (opcional)
+    print("Senha recebida:", senha)
+    print("Hash no banco:", repr(colaborador.senha))  # mostra se tem \x
+
     if checar_senha(senha, colaborador.senha):
-        session['colaborador_id'] = colaborador.id  # Salva o ID do colaborador na sessão
-        print("Session salva?", 'colaborador_id' in session)  # Verifique se o ID foi salvo
+        session.permanent = True  # 🔥 ESSENCIAL PARA MANTER A SESSÃO
+        session['colaborador_id'] = colaborador.id
         return jsonify({'mensagem': 'Login realizado com sucesso'}), 200
-    
-    # Caso a senha esteja incorreta
-    print("Colaborador logado:", colaborador.id)
-    print("Session salva?", 'colaborador_id' in session)
 
     return jsonify({'mensagem': 'Senha incorreta'}), 401
 
-    
+
+
 @bp_colaborador.route('/perfil', methods=['GET'])
 def pegar_perfil_colaborador():
     colaborador_id = session.get('colaborador_id')
+    session.permanent = True 
     
     # Verifica se o colaborador_id está presente na sessão
     print("Session no perfil:", dict(session))
@@ -114,7 +128,8 @@ def pegar_perfil_colaborador():
         return jsonify({'mensagem': 'Colaborador não logado'}), 401
 
     # Busca o colaborador no banco de dados usando o ID da sessão
-    colaborador = db.session.get(Colaborador, colaborador_id)
+    # colaborador = db.session.get(Colaborador, colaborador_id)
+    colaborador = db.session.query(Colaborador).filter_by(id=colaborador_id).first()
 
     # Se o colaborador não for encontrado, retorna 404 (não encontrado)
     if not colaborador:
