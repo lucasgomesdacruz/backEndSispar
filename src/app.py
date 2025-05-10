@@ -5,6 +5,8 @@ from src.controller.colaborador_controller import bp_colaborador
 from src.controller.reembolso_controller import bp_reembolso 
 from flask_session import Session
 
+from datetime import timedelta
+
 
 
 from src.model import db
@@ -57,6 +59,7 @@ def create_app():
 
     
     app.config['SESSION_PERMANENT'] = False
+    app.permanent_session_lifetime = timedelta(days=7)
     app.config['SESSION_TYPE'] = 'filesystem'
     # app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # ou 'None' se estiver em domínios diferentes + HTTPS
     app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Para permitir cookies cross-origin
