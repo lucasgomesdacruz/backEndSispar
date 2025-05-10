@@ -37,10 +37,6 @@ swagger_config = {
 def create_app():
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY')
-    # CORS(app, supports_credentials=True)  # Permite enviar cookies de sessão
-    # CORS(app, origins='*')
-    # CORS(app, origins=['http://localhost:5173'])
-    # CORS(app, origins=['http://localhost:5173'], supports_credentials=True)
     # CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
     CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://sispar-omega.vercel.app"]}}, supports_credentials=True)
 
@@ -53,7 +49,6 @@ def create_app():
 
     Swagger(app, config=swagger_config) # <- Instanciando o Swagger e adicionando as configurações
     
-    # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL_PROD1')
     
     app.secret_key = os.environ.get('SECRET_KEY', 'chave-secreta-de-desenvolvimento')
 
@@ -67,13 +62,6 @@ def create_app():
     
     Session(app)
     
-    # @app.after_request
-    # def after_request(response):
-    #     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-    #     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    #     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    #     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-    #     return response
     
     @app.after_request
     def after_request(response):
