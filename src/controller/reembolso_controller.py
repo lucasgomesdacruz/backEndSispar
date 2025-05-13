@@ -68,47 +68,10 @@ def visualizar_reembolso(num_prestacao):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# # Listar todos os reembolsos
-# @bp_reembolso.route('/reembolsos', methods=['GET'])
-# def listar_reembolsos():
-#     reembolsos = Reembolso.query.all()
-#     resultado = []
-#     for r in reembolsos:
-#         resultado.append({
-#             'id': r.id,
-#             'colaborador': r.colaborador,
-#             'empresa': r.empresa,
-#             'num_prestacao': r.num_prestacao,
-#             'descricao': r.descricao,
-#             'data': r.data.isoformat(),
-#             'tipo_reembolso': r.tipo_reembolso,
-#             'centro_custo': r.centro_custo,
-#             'ordem_interna': r.ordem_interna,
-#             'divisao': r.divisao,
-#             'pep': r.pep,
-#             'moeda': r.moeda,
-#             'distancia_km': r.distancia_km,
-#             'valor_km': str(r.valor_km) if r.valor_km else None,
-#             'valor_faturado': str(r.valor_faturado),
-#             'despesa': str(r.despesa) if r.despesa else None,
-#             'id_colaborador': r.id_colaborador,
-#             'status': r.status
-#         })
-#     return jsonify(resultado), 200
-
+# Listar todos os reembolsos
 @bp_reembolso.route('/reembolsos', methods=['GET'])
 def listar_reembolsos():
-    colaborador_id = session.get('colaborador_id')
-    print("Colaborador ID da sessão:", colaborador_id) 
-    if not colaborador_id:
-        return jsonify({'mensagem': 'Colaborador não logado'}), 401
-    
-    # Agora, busque os reembolsos do colaborador logado
-    reembolsos = Reembolso.query.filter_by(id_colaborador=colaborador_id).all()
-    print("Reembolsos encontrados:", reembolsos)
-    if not reembolsos:
-        return jsonify([]), 200  # Retorna um array vazio se não houver reembolsos
-    
+    reembolsos = Reembolso.query.all()
     resultado = []
     for r in reembolsos:
         resultado.append({
@@ -132,6 +95,43 @@ def listar_reembolsos():
             'status': r.status
         })
     return jsonify(resultado), 200
+
+# @bp_reembolso.route('/reembolsos', methods=['GET'])
+# def listar_reembolsos():
+#     colaborador_id = session.get('colaborador_id')
+#     print("Colaborador ID da sessão:", colaborador_id) 
+#     if not colaborador_id:
+#         return jsonify({'mensagem': 'Colaborador não logado'}), 401
+    
+#     # Agora, busque os reembolsos do colaborador logado
+#     reembolsos = Reembolso.query.filter_by(id_colaborador=colaborador_id).all()
+#     print("Reembolsos encontrados:", reembolsos)
+#     if not reembolsos:
+#         return jsonify([]), 200  # Retorna um array vazio se não houver reembolsos
+    
+#     resultado = []
+#     for r in reembolsos:
+#         resultado.append({
+#             'id': r.id,
+#             'colaborador': r.colaborador,
+#             'empresa': r.empresa,
+#             'num_prestacao': r.num_prestacao,
+#             'descricao': r.descricao,
+#             'data': r.data.isoformat(),
+#             'tipo_reembolso': r.tipo_reembolso,
+#             'centro_custo': r.centro_custo,
+#             'ordem_interna': r.ordem_interna,
+#             'divisao': r.divisao,
+#             'pep': r.pep,
+#             'moeda': r.moeda,
+#             'distancia_km': r.distancia_km,
+#             'valor_km': str(r.valor_km) if r.valor_km else None,
+#             'valor_faturado': str(r.valor_faturado),
+#             'despesa': str(r.despesa) if r.despesa else None,
+#             'id_colaborador': r.id_colaborador,
+#             'status': r.status
+#         })
+#     return jsonify(resultado), 200
 
 # Buscar um reembolso por ID
 @bp_reembolso.route('/reembolsos/<int:id>', methods=['GET'])
