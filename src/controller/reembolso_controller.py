@@ -99,6 +99,7 @@ def visualizar_reembolso(num_prestacao):
 @bp_reembolso.route('/reembolsos', methods=['GET'])
 def listar_reembolsos():
     colaborador_id = session.get('colaborador_id')
+    print("Colaborador ID da sessão:", colaborador_id) 
     if not colaborador_id:
         return jsonify({'mensagem': 'Colaborador não logado'}), 401
     
