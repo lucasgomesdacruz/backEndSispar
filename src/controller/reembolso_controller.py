@@ -99,11 +99,14 @@ def visualizar_reembolso(num_prestacao):
 @bp_reembolso.route('/reembolsos', methods=['GET'])
 def listar_reembolsos():
     colaborador_id = session.get('colaborador_id')
-    
     if not colaborador_id:
-        return jsonify({'mensagem': 'Usuário não autenticado'}), 401
-
+        return jsonify({'mensagem': 'Colaborador não logado'}), 401
+    
+    # Agora, busque os reembolsos do colaborador logado
     reembolsos = Reembolso.query.filter_by(id_colaborador=colaborador_id).all()
+    if not reembolsos:
+        return jsonify([]), 200  # Retorna um array vazio se não houver reembolsos
+    
     resultado = []
     for r in reembolsos:
         resultado.append({
@@ -127,7 +130,6 @@ def listar_reembolsos():
             'status': r.status
         })
     return jsonify(resultado), 200
-
 
 # Buscar um reembolso por ID
 @bp_reembolso.route('/reembolsos/<int:id>', methods=['GET'])
