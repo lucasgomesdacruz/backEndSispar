@@ -215,12 +215,36 @@ def atualizar_status(id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
-# Deletar um reembolso
-@bp_reembolso.route('/reembolsos/<int:id>', methods=['DELETE'])
-def deletar_reembolso(id):
-    reembolso = Reembolso.query.get(id)
+# # Deletar um reembolso
+# @bp_reembolso.route('/reembolsos/<int:id>', methods=['DELETE'])
+# def deletar_reembolso(id):
+#     reembolso = Reembolso.query.get(id)
+#     if not reembolso:
+#         return jsonify({'message': 'Reembolso não encontrado'}), 404
+
+#     try:
+#         db.session.delete(reembolso)
+#         db.session.commit()
+#         return jsonify({'message': 'Reembolso deletado com sucesso'}), 200
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({'error': str(e)}), 400
+
+@bp_reembolso.route('/reembolsos', methods=['DELETE'])
+def deletar_reembolso_do_colaborador():
+    if 'colaborador_id' not in session:
+        return jsonify({'message': 'Login necessário para deletar reembolso'}), 401
+
+    dados = request.get_json()
+    id_reembolso = dados.get('id')
+
+    if not id_reembolso:
+        return jsonify({'message': 'ID do reembolso é obrigatório'}), 400
+
+    reembolso = Reembolso.query.filter_by(id=id_reembolso, id_colaborador=session['colaborador_id']).first()
+
     if not reembolso:
-        return jsonify({'message': 'Reembolso não encontrado'}), 404
+        return jsonify({'message': 'Reembolso não encontrado ou não pertence ao usuário logado'}), 404
 
     try:
         db.session.delete(reembolso)
