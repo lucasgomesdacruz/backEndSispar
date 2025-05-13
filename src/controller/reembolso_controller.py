@@ -105,6 +105,7 @@ def listar_reembolsos():
     
     # Agora, busque os reembolsos do colaborador logado
     reembolsos = Reembolso.query.filter_by(id_colaborador=colaborador_id).all()
+    print("Reembolsos encontrados:", reembolsos)
     if not reembolsos:
         return jsonify([]), 200  # Retorna um array vazio se não houver reembolsos
     
