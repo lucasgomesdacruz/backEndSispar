@@ -5,11 +5,47 @@ from datetime import datetime
 
 bp_reembolso = Blueprint('reembolsos', __name__, url_prefix='/colaborador')
 
-# Criar um novo reembolso
+# # Criar um novo reembolso
+# @bp_reembolso.route('/reembolsos', methods=['POST', 'OPTIONS'])
+# def criar_reembolso():
+#     if request.method == "OPTIONS":
+#         return '', 200 
+#     data = request.json
+#     try:
+#         novo_reembolso = Reembolso(
+#             colaborador=data['colaborador'],
+#             empresa=data['empresa'],
+#             num_prestacao=data['num_prestacao'],
+#             descricao=data.get('descricao'),
+#             data=datetime.strptime(data['data'], '%Y-%m-%d'),
+#             tipo_reembolso=data['tipo_reembolso'],
+#             centro_custo=data['centro_custo'],
+#             ordem_interna=data.get('ordem_interna'),
+#             divisao=data.get('divisao'),
+#             pep=data.get('pep'),
+#             moeda=data['moeda'],
+#             distancia_km=data.get('distancia_km'),
+#             valor_km=data.get('valor_km'),
+#             valor_faturado=data['valor_faturado'],
+#             despesa=data.get('despesa'),
+#             id_colaborador=7,
+#             status=data.get('status', 'Em analise')
+#         )
+#         db.session.add(novo_reembolso)
+#         db.session.commit()
+#         return jsonify({'message': 'Reembolso criado com sucesso!'}), 201
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({'error': str(e)}), 400
+
 @bp_reembolso.route('/reembolsos', methods=['POST', 'OPTIONS'])
 def criar_reembolso():
     if request.method == "OPTIONS":
-        return '', 200 
+        return '', 200
+
+    if 'colaborador_id' not in session:
+        return jsonify({'mensagem': 'Login necessário para criar reembolso'}), 401
+
     data = request.json
     try:
         novo_reembolso = Reembolso(
@@ -28,7 +64,7 @@ def criar_reembolso():
             valor_km=data.get('valor_km'),
             valor_faturado=data['valor_faturado'],
             despesa=data.get('despesa'),
-            id_colaborador=7,
+            id_colaborador=session.get('colaborador_id'),  # ✅ PEGA O COLABORADOR DA SESSÃO
             status=data.get('status', 'Em analise')
         )
         db.session.add(novo_reembolso)
@@ -37,6 +73,7 @@ def criar_reembolso():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
+
     
 @bp_reembolso.route('/reembolsos/<int:num_prestacao>', methods=['GET'])
 def visualizar_reembolso(num_prestacao):
