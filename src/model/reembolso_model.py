@@ -26,6 +26,9 @@ class Reembolso(db.Model):
     id_colaborador = Column(Integer, ForeignKey('colaborador.id'), nullable=False)
 
     status = Column(String(30), nullable=False)
+    
+     # Relacionamento com Colaborador
+    colaborador_info = db.relationship('Colaborador', backref='reembolsos')
 #-----------------------------------------------------------
     
     def __init__ (self, colaborador, empresa, num_prestacao, descricao, data, tipo_reembolso, centro_custo, ordem_interna, divisao, pep, moeda, distancia_km, valor_km, valor_faturado, despesa, id_colaborador, status='Em analise'):
