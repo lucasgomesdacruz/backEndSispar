@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify
 from src.model.reembolso_model import Reembolso
 from src.model import db
 from datetime import datetime
@@ -68,71 +68,33 @@ def visualizar_reembolso(num_prestacao):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# # Listar todos os reembolsos
-# @bp_reembolso.route('/reembolsos', methods=['GET'])
-# def listar_reembolsos():
-#     reembolsos = Reembolso.query.all()
-#     resultado = []
-#     for r in reembolsos:
-#         resultado.append({
-#             'id': r.id,
-#             'colaborador': r.colaborador,
-#             'empresa': r.empresa,
-#             'num_prestacao': r.num_prestacao,
-#             'descricao': r.descricao,
-#             'data': r.data.isoformat(),
-#             'tipo_reembolso': r.tipo_reembolso,
-#             'centro_custo': r.centro_custo,
-#             'ordem_interna': r.ordem_interna,
-#             'divisao': r.divisao,
-#             'pep': r.pep,
-#             'moeda': r.moeda,
-#             'distancia_km': r.distancia_km,
-#             'valor_km': str(r.valor_km) if r.valor_km else None,
-#             'valor_faturado': str(r.valor_faturado),
-#             'despesa': str(r.despesa) if r.despesa else None,
-#             'id_colaborador': r.id_colaborador,
-#             'status': r.status
-#         })
-#     return jsonify(resultado), 200
-
+# Listar todos os reembolsos
 @bp_reembolso.route('/reembolsos', methods=['GET'])
-def obter_reembolsos_do_colaborador():
-    # Recupera o ID do colaborador da sessão
-    colaborador_id = session.get('colaborador_id')
-
-    if not colaborador_id:
-        return jsonify({'mensagem': 'Colaborador não logado'}), 401
-
-    # Filtra os reembolsos pelo colaborador_id
-    reembolsos = Reembolso.query.filter_by(id_colaborador=colaborador_id).all()
-
-    if not reembolsos:
-        return jsonify({'mensagem': 'Nenhum reembolso encontrado'}), 404
-
-    # Retorna os dados dos reembolsos
-    return jsonify([
-        {
-            'id': reembolso.id,
-            'colaborador': reembolso.colaborador,
-            'empresa': reembolso.empresa,
-            'num_prestacao': reembolso.num_prestacao,
-            'descricao': reembolso.descricao,
-            'data': reembolso.data.isoformat(),
-            'tipo_reembolso': reembolso.tipo_reembolso,
-            'centro_custo': reembolso.centro_custo,
-            'ordem_interna': reembolso.ordem_interna,
-            'divisao': reembolso.divisao,
-            'pep': reembolso.pep,
-            'moeda': reembolso.moeda,
-            'distancia_km': reembolso.distancia_km,
-            'valor_km': str(reembolso.valor_km) if reembolso.valor_km else None,
-            'valor_faturado': str(reembolso.valor_faturado),
-            'despesa': str(reembolso.despesa) if reembolso.despesa else None,
-            'id_colaborador': reembolso.id_colaborador,
-            'status': reembolso.status
-        } for reembolso in reembolsos
-    ]), 200
+def listar_reembolsos():
+    reembolsos = Reembolso.query.all()
+    resultado = []
+    for r in reembolsos:
+        resultado.append({
+            'id': r.id,
+            'colaborador': r.colaborador,
+            'empresa': r.empresa,
+            'num_prestacao': r.num_prestacao,
+            'descricao': r.descricao,
+            'data': r.data.isoformat(),
+            'tipo_reembolso': r.tipo_reembolso,
+            'centro_custo': r.centro_custo,
+            'ordem_interna': r.ordem_interna,
+            'divisao': r.divisao,
+            'pep': r.pep,
+            'moeda': r.moeda,
+            'distancia_km': r.distancia_km,
+            'valor_km': str(r.valor_km) if r.valor_km else None,
+            'valor_faturado': str(r.valor_faturado),
+            'despesa': str(r.despesa) if r.despesa else None,
+            'id_colaborador': r.id_colaborador,
+            'status': r.status
+        })
+    return jsonify(resultado), 200
 
 # Buscar um reembolso por ID
 @bp_reembolso.route('/reembolsos/<int:id>', methods=['GET'])
