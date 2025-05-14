@@ -36,6 +36,11 @@ def cadastrar_colaborador():
     
     dados_requisicao = request.get_json()
     
+     # Verificar se o email já existe
+    colaborador_existente = Colaborador.query.filter_by(email=dados_requisicao['email']).first()
+    if colaborador_existente:
+        return jsonify({'mensagem': 'Email já cadastrado'}), 400
+    
     novo_colaborador = Colaborador(
         nome=dados_requisicao['nome'],
         email=dados_requisicao['email'],
@@ -50,7 +55,6 @@ def cadastrar_colaborador():
     
     return jsonify({'mensagem': 'Colaborador cadastrado com sucesso'}), 201
     
-# # TAREFA -> VALIDAÇÃO DO USUARIO. VERIFICAÇÃO DE USUARIO NO BANCO DE DADOS (MOCKADO)
 
 @bp_colaborador.route('/atualizar/<int:id_colaborador>', methods=['PUT'])
 def atualizar_dados_colaborador(id_colaborador):
