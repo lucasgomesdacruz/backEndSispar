@@ -65,7 +65,7 @@ def criar_reembolso():
             valor_faturado=data['valor_faturado'],
             despesa=data.get('despesa'),
             id_colaborador=session.get('colaborador_id'),  # ✅ PEGA O COLABORADOR DA SESSÃO
-            status=data.get('status') or 'Em analise'
+            status=data.get('status', 'Em analise')
         )
         db.session.add(novo_reembolso)
         db.session.commit()
@@ -169,39 +169,6 @@ def listar_reembolsos():
             'status': r.status
         })
     return jsonify(resultado), 200
-
-##rota para status de dashboard 
-@bp_reembolso.route('/dashboard/status', methods=['GET'])
-def status_dashboard():
-    colaborador_id = session.get('colaborador_id')
-    if not colaborador_id:
-        return jsonify({'mensagem': 'Colaborador não logado'}), 401
-
-    try:
-        # Contar os reembolsos por status
-        status_count = {
-            "Solicitado": Reembolso.query.filter(
-                Reembolso.id_colaborador == colaborador_id,
-                Reembolso.status == "Solicitado"
-            ).count(),
-            "Em analise": Reembolso.query.filter(
-                Reembolso.id_colaborador == colaborador_id,
-                Reembolso.status == "Em analise"
-            ).count(),
-            "Aprovado": Reembolso.query.filter(
-                Reembolso.id_colaborador == colaborador_id,
-                Reembolso.status == "Aprovado"
-            ).count(),
-            "Rejeitado": Reembolso.query.filter(
-                Reembolso.id_colaborador == colaborador_id,
-                Reembolso.status == "Rejeitado"
-            ).count()
-        }
-
-        return jsonify(status_count), 200
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
 
 # Buscar um reembolso por ID
 @bp_reembolso.route('/reembolsos/<int:id>', methods=['GET'])
