@@ -65,7 +65,7 @@ def criar_reembolso():
             valor_faturado=data['valor_faturado'],
             despesa=data.get('despesa'),
             id_colaborador=session.get('colaborador_id'),  # ✅ PEGA O COLABORADOR DA SESSÃO
-            status=data.get('status', 'Em analise')
+            status=data.get('status') or 'Em analise'
         )
         db.session.add(novo_reembolso)
         db.session.commit()
