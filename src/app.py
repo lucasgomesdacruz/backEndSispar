@@ -65,20 +65,14 @@ def create_app():
     Session(app)
     
     
-    # @app.after_request
-    # def after_request(response):
-    #     origin = request.headers.get('Origin')
-    #     if origin in ['http://localhost:5173', 'https://sispar-omega.vercel.app']:
-    #         response.headers['Access-Control-Allow-Origin'] = origin
-    #     response.headers['Access-Control-Allow-Credentials'] = 'true'
-    #     response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
-    #     response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
-    #     return response
-    
     @app.after_request
     def after_request(response):
-    # Apenas adiciona um header customizado, por exemplo:
-        response.headers['X-App-Name'] = 'SISPAR API'
+        origin = request.headers.get('Origin')
+        if origin in ['http://localhost:5173', 'https://sispar-omega.vercel.app']:
+            response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
         return response
     
     with app.app_context():
