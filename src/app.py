@@ -3,6 +3,7 @@
 from flask import Flask, request
 from src.controller.colaborador_controller import bp_colaborador
 from src.controller.reembolso_controller import bp_reembolso 
+from src.chatbot.chatbot import chatbot_bp
 from flask_session import Session
 
 from datetime import timedelta
@@ -45,6 +46,7 @@ def create_app():
     
     app.register_blueprint(bp_reembolso)
     app.register_blueprint(bp_colaborador)
+    app.register_blueprint(chatbot_bp)
     
     app.config.from_object(Config) # Trouxemos a configuração do ambiente de desenvolvimento
     db.init_app(app) # Se inicia a conexão com o banco de dados
