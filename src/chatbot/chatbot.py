@@ -41,4 +41,5 @@ def chatbot_response():
         reply = response["choices"][0]["message"]["content"]
         return jsonify({"response": reply})
     except Exception as e:
+        print("Erro:", e) 
         return jsonify({"error": str(e)}), 500
