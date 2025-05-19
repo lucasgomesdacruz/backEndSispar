@@ -145,3 +145,36 @@ def pegar_perfil_colaborador():
         'nome': colaborador.nome,
         'cargo': colaborador.cargo
     }), 200
+
+@bp_colaborador.route('/atualizar-perfil', methods=['PUT'])
+def atualizar_perfil_colaborador():
+    colaborador_id = session.get('colaborador_id')
+    session.permanent = True
+
+    if not colaborador_id:
+        return jsonify({'mensagem': 'Colaborador não logado'}), 401
+
+    colaborador = db.session.query(Colaborador).filter_by(id=colaborador_id).first()
+
+    if not colaborador:
+        return jsonify({'mensagem': 'Colaborador não encontrado'}), 404
+
+    dados = request.get_json()
+
+    # Atualiza os campos permitidos
+    if 'nome' in dados:
+        colaborador.nome = dados['nome']
+    if 'cargo' in dados:
+        colaborador.cargo = dados['cargo']
+    if 'email' in dados:
+        # Verifica se o novo e-mail já está em uso por outro usuário
+        email_existente = Colaborador.query.filter_by(email=dados['email']).first()
+        if email_existente and email_existente.id != colaborador.id:
+            return jsonify({'mensagem': 'Email já está em uso por outro colaborador'}), 400
+        colaborador.email = dados['email']
+    if 'senha' in dados:
+        colaborador.senha = hash_senha(dados['senha'])
+
+    db.session.commit()
+
+    return jsonify({'mensagem': 'Perfil atualizado com sucesso'}), 200
