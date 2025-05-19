@@ -1,15 +1,14 @@
-
 # src/controller/chatbot_controller.py
 from flask import Blueprint, request, jsonify
-import openai
 import os
-
+from openai import OpenAI
 from dotenv import load_dotenv
+
 load_dotenv()
 
 chatbot_bp = Blueprint('chatbot', __name__)
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 @chatbot_bp.route('/chatbot', methods=['POST'])
 def chatbot_response():
@@ -20,7 +19,7 @@ def chatbot_response():
         return jsonify({"error": "Mensagem não fornecida"}), 400
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
@@ -38,7 +37,7 @@ def chatbot_response():
                 }
             ]
         )
-        reply = response["choices"][0]["message"]["content"]
+        reply = response.choices[0].message.content
         return jsonify({"response": reply})
     except Exception as e:
         print("Erro:", e) 
