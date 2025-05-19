@@ -3,7 +3,7 @@
 from flask import Flask, request
 from src.controller.colaborador_controller import bp_colaborador
 from src.controller.reembolso_controller import bp_reembolso 
-from src.chatbot.chatbot import chatbot_bp
+from src.controller.chatbot_controller import chatbot_bp
 from flask_session import Session
 
 from datetime import timedelta
