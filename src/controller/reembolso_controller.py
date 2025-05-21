@@ -5,7 +5,7 @@ from datetime import datetime
 
 bp_reembolso = Blueprint('reembolsos', __name__, url_prefix='/colaborador')
 
-# # Criar um novo reembolso
+# # Listar todos reembolsos
 # @bp_reembolso.route('/reembolsos', methods=['POST', 'OPTIONS'])
 # def criar_reembolso():
 #     if request.method == "OPTIONS":
@@ -64,7 +64,7 @@ def criar_reembolso():
             valor_km=data.get('valor_km'),
             valor_faturado=data['valor_faturado'],
             despesa=data.get('despesa'),
-            id_colaborador=session.get('colaborador_id'),  # ✅ PEGA O COLABORADOR DA SESSÃO
+            id_colaborador=session.get('colaborador_id'),  # PEGA O COLABORADOR DA SESSÃO
             status=data.get('status', 'Em analise')
         )
         db.session.add(novo_reembolso)
@@ -214,21 +214,6 @@ def atualizar_status(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
-
-# # Deletar um reembolso
-# @bp_reembolso.route('/reembolsos/<int:id>', methods=['DELETE'])
-# def deletar_reembolso(id):
-#     reembolso = Reembolso.query.get(id)
-#     if not reembolso:
-#         return jsonify({'message': 'Reembolso não encontrado'}), 404
-
-#     try:
-#         db.session.delete(reembolso)
-#         db.session.commit()
-#         return jsonify({'message': 'Reembolso deletado com sucesso'}), 200
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({'error': str(e)}), 400
 
 @bp_reembolso.route('/reembolsos', methods=['DELETE'])
 def deletar_reembolso_do_colaborador():
