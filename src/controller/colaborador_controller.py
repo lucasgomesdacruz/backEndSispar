@@ -157,7 +157,7 @@
 
 #     return jsonify({'mensagem': 'Perfil atualizado com sucesso'}), 200
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, current_app, request, jsonify
 from src.model.colaborador_model import Colaborador
 from src.model import db
 from src.security.security import hash_senha, checar_senha
@@ -206,27 +206,41 @@ def cadastrar_colaborador():
     
     return jsonify({'mensagem': 'Colaborador cadastrado com sucesso'}), 201
     
-@bp_colaborador.route('/login', methods=['POST'])
+@bp_colaborador.route('/login', methods=['POST', 'OPTIONS'])
 @swag_from('../docs/colaborador/login_colaborador.yml')
 def login():
-    dados_requisicao = request.get_json()
-    email = dados_requisicao.get('email')
-    senha = dados_requisicao.get('senha')
+    # Trata requisições OPTIONS para CORS
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+    
+    try:
+        dados_requisicao = request.get_json()
+        if not dados_requisicao:
+            return jsonify({'mensagem': 'Dados de login não fornecidos'}), 400
+            
+        email = dados_requisicao.get('email')
+        senha = dados_requisicao.get('senha')
 
-    if not email or not senha:
-        return jsonify({'mensagem': 'Todos os campos devem ser preenchidos'}), 400
+        if not email or not senha:
+            return jsonify({'mensagem': 'Email e senha são obrigatórios'}), 400
 
-    colaborador = db.session.execute(
-        db.select(Colaborador).where(Colaborador.email == email)
-    ).scalar()
+        # Busca o colaborador no banco de dados
+        colaborador = db.session.execute(
+            db.select(Colaborador).where(Colaborador.email == email)
+        ).scalar()
 
-    if not colaborador:
-        return jsonify({'mensagem': 'O usuário não foi encontrado'}), 404
+        if not colaborador:
+            return jsonify({'mensagem': 'Credenciais inválidas'}), 401
 
-    if checar_senha(senha, colaborador.senha):
-        # Gera o token JWT em vez de usar sessão
+        # Verifica a senha
+        if not checar_senha(senha, colaborador.senha):
+            return jsonify({'mensagem': 'Credenciais inválidas'}), 401
+
+        # Gera o token JWT
         token = generate_token(colaborador.id)
-        return jsonify({
+        
+        # Resposta de sucesso
+        response_data = {
             'mensagem': 'Login realizado com sucesso',
             'token': token,
             'colaborador': {
@@ -235,10 +249,21 @@ def login():
                 'email': colaborador.email,
                 'cargo': colaborador.cargo
             }
-        }), 200
+        }
+        
+        response = jsonify(response_data)
+        response.status_code = 200
+        
+        # Configura headers para CORS
+        response.headers.add('Access-Control-Allow-Origin', 'https://seusitefrontend.com')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        
+        return response
 
-    return jsonify({'mensagem': 'Senha incorreta'}), 401
-
+    except Exception as e:
+        current_app.logger.error(f"Erro no login: {str(e)}")
+        return jsonify({'mensagem': 'Erro interno no servidor'}), 500
+    
 @bp_colaborador.route('/perfil', methods=['GET'])
 @token_required
 @swag_from('../docs/colaborador/perfil_colaborador.yml')

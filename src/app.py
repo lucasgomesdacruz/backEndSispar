@@ -129,7 +129,8 @@ def create_app():
         ],
         supports_credentials=True,
         allow_headers=["Content-Type", "Authorization"],
-        expose_headers=["Authorization"]
+        expose_headers=["Authorization"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     )
     
     # Registro de blueprints (rotas)
