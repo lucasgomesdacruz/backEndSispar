@@ -2,43 +2,13 @@ from flask import Blueprint, request, jsonify, session
 from src.model.reembolso_model import Reembolso
 from src.model import db
 from datetime import datetime
+from flasgger import swag_from
 
 bp_reembolso = Blueprint('reembolsos', __name__, url_prefix='/colaborador')
 
-# # Listar todos reembolsos
-# @bp_reembolso.route('/reembolsos', methods=['POST', 'OPTIONS'])
-# def criar_reembolso():
-#     if request.method == "OPTIONS":
-#         return '', 200 
-#     data = request.json
-#     try:
-#         novo_reembolso = Reembolso(
-#             colaborador=data['colaborador'],
-#             empresa=data['empresa'],
-#             num_prestacao=data['num_prestacao'],
-#             descricao=data.get('descricao'),
-#             data=datetime.strptime(data['data'], '%Y-%m-%d'),
-#             tipo_reembolso=data['tipo_reembolso'],
-#             centro_custo=data['centro_custo'],
-#             ordem_interna=data.get('ordem_interna'),
-#             divisao=data.get('divisao'),
-#             pep=data.get('pep'),
-#             moeda=data['moeda'],
-#             distancia_km=data.get('distancia_km'),
-#             valor_km=data.get('valor_km'),
-#             valor_faturado=data['valor_faturado'],
-#             despesa=data.get('despesa'),
-#             id_colaborador=7,
-#             status=data.get('status', 'Em analise')
-#         )
-#         db.session.add(novo_reembolso)
-#         db.session.commit()
-#         return jsonify({'message': 'Reembolso criado com sucesso!'}), 201
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({'error': str(e)}), 400
 
 @bp_reembolso.route('/reembolsos', methods=['POST', 'OPTIONS'])
+@swag_from('../docs/reembolso/create_reembolso.yml')
 def criar_reembolso():
     if request.method == "OPTIONS":
         return '', 200
@@ -106,32 +76,32 @@ def visualizar_reembolso(num_prestacao):
         return jsonify({'error': str(e)}), 500
 
 # # Listar todos os reembolsos
-# @bp_reembolso.route('/reembolsos', methods=['GET'])
-# def listar_reembolsos():
-#     reembolsos = Reembolso.query.all()
-#     resultado = []
-#     for r in reembolsos:
-#         resultado.append({
-#             'id': r.id,
-#             'colaborador': r.colaborador,
-#             'empresa': r.empresa,
-#             'num_prestacao': r.num_prestacao,
-#             'descricao': r.descricao,
-#             'data': r.data.isoformat(),
-#             'tipo_reembolso': r.tipo_reembolso,
-#             'centro_custo': r.centro_custo,
-#             'ordem_interna': r.ordem_interna,
-#             'divisao': r.divisao,
-#             'pep': r.pep,
-#             'moeda': r.moeda,
-#             'distancia_km': r.distancia_km,
-#             'valor_km': str(r.valor_km) if r.valor_km else None,
-#             'valor_faturado': str(r.valor_faturado),
-#             'despesa': str(r.despesa) if r.despesa else None,
-#             'id_colaborador': r.id_colaborador,
-#             'status': r.status
-#         })
-#     return jsonify(resultado), 200
+@bp_reembolso.route('/pegar-todos-reembolsos', methods=['GET'])
+def listar_todos_reembolsos():
+    reembolsos = Reembolso.query.all()
+    resultado = []
+    for r in reembolsos:
+        resultado.append({
+            'id': r.id,
+            'colaborador': r.colaborador,
+            'empresa': r.empresa,
+            'num_prestacao': r.num_prestacao,
+            'descricao': r.descricao,
+            'data': r.data.isoformat(),
+            'tipo_reembolso': r.tipo_reembolso,
+            'centro_custo': r.centro_custo,
+            'ordem_interna': r.ordem_interna,
+            'divisao': r.divisao,
+            'pep': r.pep,
+            'moeda': r.moeda,
+            'distancia_km': r.distancia_km,
+            'valor_km': str(r.valor_km) if r.valor_km else None,
+            'valor_faturado': str(r.valor_faturado),
+            'despesa': str(r.despesa) if r.despesa else None,
+            'id_colaborador': r.id_colaborador,
+            'status': r.status
+        })
+    return jsonify(resultado), 200
 
 @bp_reembolso.route('/reembolsos', methods=['GET'])
 def listar_reembolsos():
@@ -238,3 +208,26 @@ def deletar_reembolso_do_colaborador():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
+    
+@bp_reembolso.route('/reembolsos/resumo', methods=['GET'])
+def resumo_reembolsos():
+    try:
+        total_solicitados = db.session.query(Reembolso).count()
+
+        aprovados = db.session.query(Reembolso).filter(Reembolso.status == 'Aprovado').count()
+        rejeitados = db.session.query(Reembolso).filter(Reembolso.status == 'Rejeitado').count()
+
+        # Tudo que **não é Aprovado nem Rejeitado** será tratado como "Em análise"
+        em_analise = db.session.query(Reembolso).filter(
+            ~Reembolso.status.in_(['Aprovado', 'Rejeitado'])
+        ).count()
+
+        return jsonify({
+            'total_solicitados': total_solicitados,
+            'em_analise': em_analise,
+            'aprovados': aprovados,
+            'rejeitados': rejeitados
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
