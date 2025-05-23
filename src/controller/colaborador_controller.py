@@ -8,13 +8,8 @@ import bcrypt
 
 bp_colaborador = Blueprint('colaborador', __name__, url_prefix='/colaborador')
 
-dados = [
-    {'id': 1, 'nome': 'Samuel Silvério', 'cargo': 'Desenvolvedor Back-end', 'cracha': 'BE12310'},
-    {'id': 2, 'nome': 'Karynne Moreira', 'cargo': 'Desenvolvedora Front-end', 'cracha': 'FE21310'},
-    {'id': 3, 'nome': 'Joy Assis', 'cargo': 'Desenvolvedora Fullstack', 'cracha': 'FS12110'},
-]
-
 @bp_colaborador.route('/todos-colaboradores', methods=['GET'])
+@swag_from('../docs/colaborador/todos_colaboradores.yml')
 def pegar_dados_todos_colaboradores():
     
     colaboradores = db.session.execute(
@@ -55,28 +50,8 @@ def cadastrar_colaborador():
     
     return jsonify({'mensagem': 'Colaborador cadastrado com sucesso'}), 201
     
-
-@bp_colaborador.route('/atualizar/<int:id_colaborador>', methods=['PUT'])
-def atualizar_dados_colaborador(id_colaborador):
-    
-    dados_colaborador = request.get_json()
-    
-    for colaborador in dados:
-        if colaborador['id'] == id_colaborador:
-            colaborador_encontrado = colaborador
-            break
-    
-    if 'nome' in dados_colaborador:
-        colaborador_encontrado['nome'] = dados_colaborador['nome']
-    if 'cargo' in dados_colaborador:
-        colaborador_encontrado['cargo'] = dados_colaborador['cargo']
-    if 'cracha' in dados_colaborador:
-        colaborador_encontrado['cracha'] = dados_colaborador['cracha']
-
-    return jsonify( {'mensagem': 'Dados do colaborador atualizados com sucesso'}), 200
-
-
 @bp_colaborador.route('/login', methods=['POST'])
+@swag_from('../docs/colaborador/login_colaborador.yml')
 def login():
     dados_requisicao = request.get_json()
     email = dados_requisicao.get('email')
@@ -119,6 +94,7 @@ def login():
 
 
 @bp_colaborador.route('/perfil', methods=['GET'])
+@swag_from('../docs/colaborador/perfil_colaborador.yml')
 def pegar_perfil_colaborador():
     colaborador_id = session.get('colaborador_id')
     session.permanent = True 
@@ -143,10 +119,12 @@ def pegar_perfil_colaborador():
     return jsonify({
         'id': colaborador.id,
         'nome': colaborador.nome,
-        'cargo': colaborador.cargo
+        'cargo': colaborador.cargo,
+        'email': colaborador.email
     }), 200
 
 @bp_colaborador.route('/atualizar-perfil', methods=['PUT'])
+@swag_from('../docs/colaborador/atualizar_perfil_colaborador.yml')
 def atualizar_perfil_colaborador():
     colaborador_id = session.get('colaborador_id')
     session.permanent = True
