@@ -12,7 +12,7 @@ class Config():
     SQLALCHEMY_DATABASE_URI = os.getenv('URL_DATABASE_PROD') 
     print("DATABASE URI:", SQLALCHEMY_DATABASE_URI)  
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
-    # print("DATABASE URI:", environ.get("URL_DATABASE_PROD2"))
+    print("DATABASE URI:", environ.get("URL_DATABASE_PROD"))
     
     
       # Novo: Configurações específicas para JWT
