@@ -163,6 +163,14 @@ def create_app():
 
     # 🌍 Detecta ambiente
     is_production = os.getenv("FLASK_ENV") == "production"
+    
+    # Define CORS_ORIGINS first
+    app.config['CORS_ORIGINS'] = [
+        "http://localhost:5173",
+        "https://sispar-omega.vercel.app"
+    ]
+
+    
 
     app.config.update(
         SECRET_KEY=os.getenv('SECRET_KEY'),
@@ -185,20 +193,8 @@ def create_app():
     
     # Sessão
     Session(app)
-
-    # CORS(app, resources={
-    #     r"/*": {
-    #         "origins": [
-    #             "http://localhost:5173",
-    #             "https://sispar-omega.vercel.app"
-    #         ],
-    #         "supports_credentials": True,
-    #         "allow_headers": ["Content-Type", "Authorization"],
-    #         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-    #     }
-    # })
     
-    # Initialize CORS
+     # Now initialize CORS with the configured origins
     CORS(app, resources={
         r"/*": {
             "origins": app.config['CORS_ORIGINS'],
@@ -207,6 +203,17 @@ def create_app():
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
         }
     })
+
+    # CORS(app, resources={
+    #     r"/*": {
+    #         "origins": [
+    #             "http://localhost:5173",
+    #             "https://sispar-omega.vercel.app"
+    #         ]
+    #     }
+    # })
+    
+    
 
     @app.after_request
     def apply_cors_headers(response):
