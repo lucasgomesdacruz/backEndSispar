@@ -174,10 +174,13 @@ def create_app():
         PERMANENT_SESSION_LIFETIME=timedelta(days=7),
         SESSION_COOKIE_NAME='flask_session',
         SESSION_COOKIE_HTTPONLY=True,
-        SESSION_COOKIE_SECURE=is_production,
+        SESSION_COOKIE_SECURE=True, # Deve ser True mesmo em desenvolvimento para testar no iOS
         SESSION_COOKIE_SAMESITE='None' if is_production else 'Lax',
         SESSION_SERIALIZATION_FORMAT='json',
+        SESSION_COOKIE_DOMAIN='.vercel.app'  # Ou seu domínio principal
     )
+    
+    
     # Sessão
     Session(app)
 
@@ -200,6 +203,9 @@ def create_app():
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        # Headers específicos para iOS
+        response.headers.add('Cross-Origin-Opener-Policy', 'same-origin')
+        response.headers.add('Cross-Origin-Embedder-Policy', 'require-corp')
         return response
 
     # Banco de dados

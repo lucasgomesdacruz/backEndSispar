@@ -53,6 +53,8 @@ def cadastrar_colaborador():
 @bp_colaborador.route('/login', methods=['POST'])
 @swag_from('../docs/colaborador/login_colaborador.yml')
 def login():
+    user_agent = request.headers.get('User-Agent')
+    print(f"Login attempt from: {user_agent}")
     dados_requisicao = request.get_json()
     email = dados_requisicao.get('email')
     senha = dados_requisicao.get('senha')
