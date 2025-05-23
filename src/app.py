@@ -120,7 +120,7 @@
 #         db.create_all()
 
 #     return app
-from flask import Flask
+from flask import Flask, request, jsonify, session
 from flask_session import Session
 from flask_cors import CORS
 from flasgger import Swagger
@@ -135,7 +135,6 @@ from src.controller.reembolso_controller import bp_reembolso
 
 # Banco de dados
 from src.model import db
-import redis 
 
 # Carrega variáveis do .env
 load_dotenv()
@@ -177,7 +176,9 @@ def create_app():
         SESSION_COOKIE_SECURE=True, # Deve ser True mesmo em desenvolvimento para testar no iOS
         SESSION_COOKIE_SAMESITE='None' if is_production else 'Lax',
         SESSION_SERIALIZATION_FORMAT='json',
-        SESSION_COOKIE_DOMAIN='.vercel.app'  # Ou seu domínio principal
+        # SESSION_COOKIE_DOMAIN='.vercel.app'  # Ou seu domínio principal
+        SESSION_COOKIE_PATH='/', 
+        SESSION_COOKIE_DOMAIN='sispar-omega.vercel.app'
     )
     
     
@@ -197,17 +198,27 @@ def create_app():
         }
     })
 
-    @app.after_request
-    def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', 'https://sispar-omega.vercel.app')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        # Headers específicos para iOS
-        response.headers.add('Cross-Origin-Opener-Policy', 'same-origin')
-        response.headers.add('Cross-Origin-Embedder-Policy', 'require-corp')
+    # Configuração específica para iOS
+    def configure_for_ios(response):
+        user_agent = request.headers.get('User-Agent', '')
+        if 'iPhone' in user_agent or 'iPad' in user_agent:
+            response.headers.update({
+                'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+                'Cross-Origin-Embedder-Policy': 'credentialless',
+                'Access-Control-Expose-Headers': 'Set-Cookie'
+            })
         return response
 
+    @app.after_request
+    def apply_cors_headers(response):
+        # Configurações CORS padrão
+        if request.headers.get('Origin') in app.config['CORS_ORIGINS']:
+            response.headers.add('Access-Control-Allow-Origin', request.headers['Origin'])
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+        
+        # Aplica configurações específicas para iOS
+        response = configure_for_ios(response)
+        return response
     # Banco de dados
     db.init_app(app)
 
