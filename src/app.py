@@ -121,16 +121,17 @@ def create_app():
     # 🔧 Configuração de ambiente
     app.config.from_object(Config)
 
-    # 🔄 CORS configurado para JWT
+      # Configuração CORS completa
     CORS(app,
-        origins=[
-            "http://localhost:5173",
-            "https://sispar-omega.vercel.app"
-        ],
-        supports_credentials=True,
-        allow_headers=["Content-Type", "Authorization"],
-        expose_headers=["Authorization"],
-        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+        resources={
+            r"/colaborador/*": {
+                "origins": ["http://localhost:5173", "https://seusitefrontend.com"],
+                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": ["Content-Type", "Authorization"],
+                "supports_credentials": True,
+                "max_age": 86400
+            }
+        }
     )
     
     # Registro de blueprints (rotas)
