@@ -164,12 +164,24 @@ def create_app():
     # 🌍 Detecta ambiente
     is_production = os.getenv("FLASK_ENV") == "production"
     
-    # Define CORS_ORIGINS first
+    # Configure CORS settings first
     app.config['CORS_ORIGINS'] = [
         "http://localhost:5173",
         "https://sispar-omega.vercel.app"
     ]
-
+    app.config['CORS_ALLOW_HEADERS'] = [
+        'Content-Type',
+        'Authorization',
+        'X-Requested-With',
+        'Accept'
+    ]
+    app.config['CORS_METHODS'] = [
+        'GET',
+        'POST',
+        'PUT',
+        'DELETE',
+        'OPTIONS'
+    ]
     
 
     app.config.update(
@@ -195,15 +207,15 @@ def create_app():
     Session(app)
     
      # Now initialize CORS with the configured origins
-    CORS(app, resources={
-        r"/*": {
-            "origins": app.config['CORS_ORIGINS'],
-            "supports_credentials": True,
-            "allow_headers": ["Content-Type", "Authorization"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-        }
-    })
-
+    # Initialize CORS with explicit settings
+    CORS(app, 
+         resources={r"/*": {
+             "origins": app.config['CORS_ORIGINS'],
+             "allow_headers": app.config['CORS_ALLOW_HEADERS'],
+             "methods": app.config['CORS_METHODS'],
+             "supports_credentials": True
+         }})
+    
     # CORS(app, resources={
     #     r"/*": {
     #         "origins": [
@@ -216,25 +228,20 @@ def create_app():
     
 
     @app.after_request
-    def apply_cors_headers(response):
-        """Apply CORS headers after each request"""
+    def after_request(response):
+        """Handle CORS headers and preflight requests"""
         origin = request.headers.get('Origin')
         
-        # Safe check for CORS_ORIGINS
-        allowed_origins = app.config.get('CORS_ORIGINS', [])
-        
-        if origin and origin in allowed_origins:
+        if origin in app.config['CORS_ORIGINS']:
             response.headers.add('Access-Control-Allow-Origin', origin)
             response.headers.add('Access-Control-Allow-Credentials', 'true')
-            response.headers.add('Access-Control-Expose-Headers', 'Set-Cookie')
+            response.headers.add('Access-Control-Allow-Headers', ', '.join(app.config['CORS_ALLOW_HEADERS']))
+            response.headers.add('Access-Control-Allow-Methods', ', '.join(app.config['CORS_METHODS']))
         
-        # iOS specific headers
-        user_agent = request.headers.get('User-Agent', '')
-        if 'iPhone' in user_agent or 'iPad' in user_agent:
-            response.headers.update({
-                'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
-                'Cross-Origin-Embedder-Policy': 'credentialless'
-            })
+        # Handle preflight requests
+        if request.method == 'OPTIONS':
+            response.headers.add('Access-Control-Max-Age', '86400')  # 24 hours
+            return response, 200
         
         return response
     # Banco de dados
