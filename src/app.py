@@ -125,7 +125,7 @@ def create_app():
     CORS(app,
         resources={
             r"/colaborador/*": {
-                "origins": ["http://localhost:5173", "https://seusitefrontend.com"],
+                "origins": ["http://localhost:5173", "https://sispar-omega.vercel.app"],
                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
                 "allow_headers": ["Content-Type", "Authorization"],
                 "supports_credentials": True,
