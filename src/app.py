@@ -166,7 +166,7 @@ def create_app():
 
     # 🔧 Configurações base
     app.config.update(
-        SQLALCHEMY_DATABASE_URI=os.getenv("URL_DATABASE_PROD2"),  # Use DATABASE_URL para prod
+        SQLALCHEMY_DATABASE_URI=os.getenv("URL_DATABASE_PROD"),  # Use DATABASE_URL para prod
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         SESSION_PERMANENT=True,
         PERMANENT_SESSION_LIFETIME=timedelta(days=7),
