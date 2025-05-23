@@ -165,35 +165,19 @@ def create_app():
     # 🌍 Detecta ambiente
     is_production = os.getenv("FLASK_ENV") == "production"
 
-    # 🔧 Configurações base
     app.config.update(
-        SQLALCHEMY_DATABASE_URI=os.getenv("URL_DATABASE_PROD"),  # Use DATABASE_URL para prod
+        SQLALCHEMY_DATABASE_URI=os.getenv("URL_DATABASE_PROD"),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        SESSION_TYPE='filesystem',
+        SESSION_FILE_DIR='./flask_sessions',
         SESSION_PERMANENT=True,
         PERMANENT_SESSION_LIFETIME=timedelta(days=7),
         SESSION_COOKIE_NAME='flask_session',
         SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SECURE=is_production,
+        SESSION_COOKIE_SAMESITE='None' if is_production else 'Lax',
         SESSION_SERIALIZATION_FORMAT='json',
     )
-
-    if is_production:
-        redis_url = os.getenv("REDIS_URL")
-        # 🌐 Produção (Ex: Redis, HTTPS, CORS externo)
-        app.config.update(
-            SESSION_TYPE='redis',
-            SESSION_REDIS=redis.from_url(redis_url),  # aqui já passa a instância, não só a string
-            SESSION_COOKIE_SECURE=True,
-            SESSION_COOKIE_SAMESITE='None',
-        )
-    else:
-        # 🧪 Desenvolvimento local
-        app.config.update(
-            SESSION_TYPE='filesystem',
-            SESSION_FILE_DIR='./flask_sessions',
-            SESSION_COOKIE_SECURE=False,
-            SESSION_COOKIE_SAMESITE='Lax',
-        )
-
     # Sessão
     Session(app)
 
