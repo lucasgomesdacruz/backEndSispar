@@ -52,6 +52,13 @@ def create_app():
     app.config['SESSION_COOKIE_SECURE'] = True  # Requer HTTPS
     app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Necessário para cookies cross-origin
     app.config['SESSION_COOKIE_HTTPONLY'] = True
+    
+    CORS(app,
+        origins=["https://sispar-omega.vercel.app"],
+        supports_credentials=True,
+        expose_headers=["Set-Cookie"],
+        allow_headers=["Content-Type", "Authorization"]
+    )
         
     
 
