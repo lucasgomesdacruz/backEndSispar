@@ -179,7 +179,7 @@ def create_app():
         # 🌐 Produção (Ex: Redis, HTTPS, CORS externo)
         app.config.update(
             SESSION_TYPE='redis',
-            # SESSION_REDIS=os.getenv("REDIS_URL"),  # Ex: redis://localhost:6379/0
+            SESSION_REDIS=os.getenv("REDIS_URL"),  # Ex: redis://localhost:6379/0
             SESSION_COOKIE_SECURE=True,
             SESSION_COOKIE_SAMESITE='None',
         )
