@@ -206,25 +206,17 @@ def cadastrar_colaborador():
     
     return jsonify({'mensagem': 'Colaborador cadastrado com sucesso'}), 201
     
-@bp_colaborador.route('/login', methods=['POST', 'OPTIONS'])
+@bp_colaborador.route('/login', methods=['POST'])
 @swag_from('../docs/colaborador/login_colaborador.yml')
 def login():
-    # Trata requisições OPTIONS para CORS
-    if request.method == 'OPTIONS':
-        return jsonify({'status': 'ok'}), 200
-    
+    dados_requisicao = request.get_json()
+    email = dados_requisicao.get('email')
+    senha = dados_requisicao.get('senha')
+
+    if not email or not senha:
+        return jsonify({'mensagem': 'Todos os campos devem ser preenchidos'}), 400
+
     try:
-        dados_requisicao = request.get_json()
-        if not dados_requisicao:
-            return jsonify({'mensagem': 'Dados de login não fornecidos'}), 400
-            
-        email = dados_requisicao.get('email')
-        senha = dados_requisicao.get('senha')
-
-        if not email or not senha:
-            return jsonify({'mensagem': 'Email e senha são obrigatórios'}), 400
-
-        # Busca o colaborador no banco de dados
         colaborador = db.session.execute(
             db.select(Colaborador).where(Colaborador.email == email)
         ).scalar()
@@ -232,15 +224,12 @@ def login():
         if not colaborador:
             return jsonify({'mensagem': 'Credenciais inválidas'}), 401
 
-        # Verifica a senha
+        # Verificação segura da senha
         if not checar_senha(senha, colaborador.senha):
             return jsonify({'mensagem': 'Credenciais inválidas'}), 401
 
-        # Gera o token JWT
         token = generate_token(colaborador.id)
-        
-        # Resposta de sucesso
-        response_data = {
+        return jsonify({
             'mensagem': 'Login realizado com sucesso',
             'token': token,
             'colaborador': {
@@ -249,19 +238,10 @@ def login():
                 'email': colaborador.email,
                 'cargo': colaborador.cargo
             }
-        }
-        
-        response = jsonify(response_data)
-        response.status_code = 200
-        
-        # Configura headers para CORS
-        response.headers.add('Access-Control-Allow-Origin', 'https://seusitefrontend.com')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        
-        return response
+        }), 200
 
     except Exception as e:
-        current_app.logger.error(f"Erro no login: {str(e)}")
+        current_app.logger.error(f"Erro no processo de login: {str(e)}", exc_info=True)
         return jsonify({'mensagem': 'Erro interno no servidor'}), 500
     
 @bp_colaborador.route('/perfil', methods=['GET'])
