@@ -58,10 +58,12 @@ def create_app():
     Session(app)
 
     # 🔄 CORS habilitado com credenciais
-    CORS(app, origins=[
-        "http://localhost:5173",
-        "https://sispar-omega.vercel.app"
-    ], supports_credentials=True)
+    # CORS(app, origins=[
+    #     "http://localhost:5173",
+    #     "https://sispar-omega.vercel.app"
+    # ], supports_credentials=True)
+    
+    CORS(app, supports_credentials=True)
     
     # Registro de blueprints (rotas)
     app.register_blueprint(bp_colaborador)
