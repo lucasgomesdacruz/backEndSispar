@@ -57,7 +57,7 @@ def create_app():
 
     Session(app)
 
-    🔄 CORS habilitado com credenciais
+    # 🔄 CORS habilitado com credenciais
     CORS(app, origins=[
         "http://localhost:5173",
         "https://sispar-omega.vercel.app"
