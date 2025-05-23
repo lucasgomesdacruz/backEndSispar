@@ -135,6 +135,7 @@ from src.controller.reembolso_controller import bp_reembolso
 
 # Banco de dados
 from src.model import db
+import redis 
 
 # Carrega variáveis do .env
 load_dotenv()
@@ -176,10 +177,11 @@ def create_app():
     )
 
     if is_production:
+        redis_url = os.getenv("REDIS_URL")
         # 🌐 Produção (Ex: Redis, HTTPS, CORS externo)
         app.config.update(
             SESSION_TYPE='redis',
-            SESSION_REDIS=os.getenv("REDIS_URL"),  # Ex: redis://localhost:6379/0
+            SESSION_REDIS=redis.from_url(redis_url),  # aqui já passa a instância, não só a string
             SESSION_COOKIE_SECURE=True,
             SESSION_COOKIE_SAMESITE='None',
         )
