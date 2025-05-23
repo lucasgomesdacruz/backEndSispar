@@ -53,8 +53,6 @@ def cadastrar_colaborador():
 @bp_colaborador.route('/login', methods=['POST'])
 @swag_from('../docs/colaborador/login_colaborador.yml')
 def login():
-    user_agent = request.headers.get('User-Agent')
-    print(f"Login attempt from: {user_agent}")
     dados_requisicao = request.get_json()
     email = dados_requisicao.get('email')
     senha = dados_requisicao.get('senha')
@@ -89,22 +87,6 @@ def login():
     if checar_senha(senha, colaborador.senha):
         session.permanent = True  # ESSENCIAL PARA MANTER A SESSÃO
         session['colaborador_id'] = colaborador.id
-        print(f"Sessão criada - ID: {session.get('colaborador_id')}")
-        
-        # Obter a instância do app corretamente
-        from flask import current_app as app
-        
-        response = jsonify({'mensagem': 'Login realizado com sucesso'})
-        response.set_cookie(
-            app.session_cookie_name,
-            value=app.session_interface.get_signing_serializer(app).dumps(dict(session)),
-            secure=True,
-            httponly=True,
-            samesite='None',
-            domain='sispar-omega.vercel.app'
-        )
-        
-        
         return jsonify({'mensagem': 'Login realizado com sucesso'}), 200
 
     return jsonify({'mensagem': 'Senha incorreta'}), 401
