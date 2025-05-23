@@ -208,6 +208,7 @@ def deletar_reembolso_do_colaborador():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
+    
 #Resumo de todos os reebolsos
 @bp_reembolso.route('/reembolsos/resumo', methods=['GET'])
 def resumo_reembolsos():
@@ -232,23 +233,22 @@ def resumo_reembolsos():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-#pega resumo unico do mesmo id de user
 @bp_reembolso.route('/reembolsos/resumo/unico', methods=['GET'])
 def resumo_unico_reembolsos():
     try:
-        colaborador_id = session.get('colaborador_id')
+        id_colaborador = session.get('colaborador_id')
 
-        if not colaborador_id:
+        if not id_colaborador:
             return jsonify({'error': 'Usuário não autenticado'}), 401
 
-        total_solicitados = db.session.query(Reembolso).filter_by(colaborador_id=colaborador_id).count()
+        total_solicitados = db.session.query(Reembolso).filter_by(id_colaborador=id_colaborador).count()
 
-        aprovados = db.session.query(Reembolso).filter_by(colaborador_id=colaborador_id, status='Aprovado').count()
+        aprovados = db.session.query(Reembolso).filter_by(id_colaborador=id_colaborador, status='Aprovado').count()
 
-        rejeitados = db.session.query(Reembolso).filter_by(colaborador_id=colaborador_id, status='Rejeitado').count()
+        rejeitados = db.session.query(Reembolso).filter_by(id_colaborador=id_colaborador, status='Rejeitado').count()
 
         em_analise = db.session.query(Reembolso).filter(
-            Reembolso.colaborador_id == colaborador_id,
+            Reembolso.id_colaborador == id_colaborador,
             ~Reembolso.status.in_(['Aprovado', 'Rejeitado'])
         ).count()
 
