@@ -205,30 +205,42 @@ def cadastrar_colaborador():
     db.session.commit()
     
     return jsonify({'mensagem': 'Colaborador cadastrado com sucesso'}), 201
-    
-@bp_colaborador.route('/login', methods=['POST'])
+@bp_colaborador.route('/login', methods=['POST', 'OPTIONS'])
 @swag_from('../docs/colaborador/login_colaborador.yml')
 def login():
-    dados_requisicao = request.get_json()
-    email = dados_requisicao.get('email')
-    senha = dados_requisicao.get('senha')
-
-    if not email or not senha:
-        return jsonify({'mensagem': 'Todos os campos devem ser preenchidos'}), 400
-
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+    
     try:
-        colaborador = db.session.execute(
+        dados = request.get_json()
+        if not dados:
+            return jsonify({'mensagem': 'Dados de login não fornecidos'}), 400
+
+        email = dados.get('email', '').strip()
+        senha = dados.get('senha', '')
+
+        if not email or not senha:
+            return jsonify({'mensagem': 'Email e senha são obrigatórios'}), 400
+
+        # Busca o colaborador
+        colaborador = db.session.scalar(
             db.select(Colaborador).where(Colaborador.email == email)
-        ).scalar()
+        )
 
         if not colaborador:
             return jsonify({'mensagem': 'Credenciais inválidas'}), 401
 
         # Verificação segura da senha
-        if not checar_senha(senha, colaborador.senha):
-            return jsonify({'mensagem': 'Credenciais inválidas'}), 401
+        try:
+            if not checar_senha(senha, colaborador.senha):
+                return jsonify({'mensagem': 'Credenciais inválidas'}), 401
+        except Exception as e:
+            current_app.logger.error(f"Erro ao verificar senha: {str(e)}")
+            return jsonify({'mensagem': 'Erro na verificação de credenciais'}), 500
 
+        # Gera token JWT
         token = generate_token(colaborador.id)
+        
         return jsonify({
             'mensagem': 'Login realizado com sucesso',
             'token': token,
@@ -241,7 +253,7 @@ def login():
         }), 200
 
     except Exception as e:
-        current_app.logger.error(f"Erro no processo de login: {str(e)}", exc_info=True)
+        current_app.logger.error(f"Erro no endpoint de login: {str(e)}", exc_info=True)
         return jsonify({'mensagem': 'Erro interno no servidor'}), 500
     
 @bp_colaborador.route('/perfil', methods=['GET'])
