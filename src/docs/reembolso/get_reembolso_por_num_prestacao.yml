@@ -1,0 +1,15 @@
+get:
+  summary: Obter reembolso por número de prestação
+  tags:
+    - Reembolsos
+  parameters:
+    - in: path
+      name: num_prestacao
+      required: true
+      schema:
+        type: integer
+  responses:
+    '200':
+      description: Dados do reembolso
+    '404':
+      description: Reembolso não encontrado

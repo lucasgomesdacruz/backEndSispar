@@ -1,0 +1,26 @@
+put:
+  summary: Atualizar status de um reembolso
+  tags:
+    - Reembolsos
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+  responses:
+    '200':
+      description: Status atualizado com sucesso
+    '400':
+      description: Erro ao atualizar
+    '404':
+      description: Reembolso não encontrado
