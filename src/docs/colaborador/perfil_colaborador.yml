@@ -1,0 +1,19 @@
+tags:
+  - Colaborador
+description: Retorna os dados do colaborador logado
+responses:
+  200:
+    description: Dados do colaborador retornados com sucesso
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        cargo:
+          type: string
+  401:
+    description: Colaborador não está logado
+  404:
+    description: Colaborador não encontrado

@@ -1,0 +1,22 @@
+tags:
+  - Reembolsos
+summary: Criação de um novo reembolso
+description: Endpoint para criar um novo pedido de reembolso.
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        colaborador_id:
+          type: integer
+        valor:
+          type: number
+        motivo:
+          type: string
+responses:
+  201:
+    description: Reembolso criado com sucesso
+  400:
+    description: Dados inválidos

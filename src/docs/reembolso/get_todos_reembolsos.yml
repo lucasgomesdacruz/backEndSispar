@@ -1,0 +1,7 @@
+get:
+  summary: Listar todos os reembolsos
+  tags:
+    - Reembolsos
+  responses:
+    '200':
+      description: Lista de todos os reembolsos

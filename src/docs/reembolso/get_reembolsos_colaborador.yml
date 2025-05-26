@@ -1,0 +1,9 @@
+get:
+  summary: Listar reembolsos do colaborador logado
+  tags:
+    - Reembolsos
+  responses:
+    '200':
+      description: Lista de reembolsos do colaborador
+    '401':
+      description: Não autorizado
