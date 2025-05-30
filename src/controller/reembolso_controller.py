@@ -46,6 +46,7 @@ def criar_reembolso():
 
     
 @bp_reembolso.route('/reembolsos/<int:num_prestacao>', methods=['GET'])
+@swag_from('../docs/reembolso/get_reembolso_por_id.yml')
 def visualizar_reembolso(num_prestacao):
     try:
         reembolso = Reembolso.query.filter_by(num_prestacao=num_prestacao).first()
@@ -77,6 +78,7 @@ def visualizar_reembolso(num_prestacao):
 
 # # Listar todos os reembolsos
 @bp_reembolso.route('/pegar-todos-reembolsos', methods=['GET'])
+@swag_from('../docs/reembolso/get_todos_reembolsos.yml')
 def listar_todos_reembolsos():
     reembolsos = Reembolso.query.all()
     resultado = []
@@ -104,6 +106,7 @@ def listar_todos_reembolsos():
     return jsonify(resultado), 200
 
 @bp_reembolso.route('/reembolsos', methods=['GET'])
+@swag_from('../docs/reembolso/get_reembolsos_colaborador.yml')    
 def listar_reembolsos():
     colaborador_id = session.get('colaborador_id')
     print("Colaborador ID da sessão:", colaborador_id) 
@@ -170,6 +173,7 @@ def obter_reembolso(id):
 
 # Atualizar status de um reembolso
 @bp_reembolso.route('/reembolsos/<int:id>', methods=['PUT'])
+@swag_from('../docs/reembolso/put_atualizar_status.yml')
 def atualizar_status(id):
     reembolso = Reembolso.query.get(id)
     if not reembolso:
@@ -186,6 +190,7 @@ def atualizar_status(id):
         return jsonify({'error': str(e)}), 400
 
 @bp_reembolso.route('/reembolsos', methods=['DELETE'])
+@swag_from('../docs/reembolso/delete_reembolso_por_id.yml')   
 def deletar_reembolso_do_colaborador():
     if 'colaborador_id' not in session:
         return jsonify({'message': 'Login necessário para deletar reembolso'}), 401
