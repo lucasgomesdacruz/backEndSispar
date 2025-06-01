@@ -78,7 +78,7 @@ def visualizar_reembolso(num_prestacao):
 
 # # Listar todos os reembolsos
 @bp_reembolso.route('/pegar-todos-reembolsos', methods=['GET'])
-@swag_from('../docs/reembolso/get_todos_reembolsos.yml')
+# @swag_from('../docs/reembolso/get_todos_reembolsos.yml')
 def listar_todos_reembolsos():
     reembolsos = Reembolso.query.all()
     resultado = []
