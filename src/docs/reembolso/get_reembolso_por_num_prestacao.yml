@@ -1,16 +1,18 @@
 get:
   summary: Obter reembolso por número de prestação
+  description: Retorna os dados de um reembolso com base no número da prestação informado.
   tags:
     - Reembolsos
   parameters:
     - in: path
       name: num_prestacao
       required: true
+      description: Número da prestação do reembolso
       schema:
         type: integer
   responses:
     '200':
-      description: Dados do reembolso
+      description: Dados do reembolso encontrados com sucesso
       content:
         application/json:
           schema:
@@ -43,16 +45,37 @@ get:
                 type: string
               distancia_km:
                 type: number
+                format: float
               valor_km:
                 type: number
+                format: float
               valor_faturado:
                 type: number
+                format: float
               despesa:
                 type: number
+                format: float
               id_colaborador:
                 type: integer
               status:
                 type: string
     '404':
       description: Reembolso não encontrado
-
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Reembolso não encontrado
+    '500':
+      description: Erro interno no servidor
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Erro inesperado
