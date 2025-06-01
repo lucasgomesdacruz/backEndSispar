@@ -1,7 +1,53 @@
 get:
   summary: Listar todos os reembolsos
+  description: Retorna uma lista com todos os reembolsos cadastrados no sistema.
   tags:
     - Reembolsos
   responses:
     '200':
       description: Lista de todos os reembolsos
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                colaborador:
+                  type: string
+                empresa:
+                  type: string
+                num_prestacao:
+                  type: integer
+                descricao:
+                  type: string
+                data:
+                  type: string
+                  format: date
+                tipo_reembolso:
+                  type: string
+                centro_custo:
+                  type: string
+                ordem_interna:
+                  type: string
+                divisao:
+                  type: string
+                pep:
+                  type: string
+                moeda:
+                  type: string
+                distancia_km:
+                  type: number
+                valor_km:
+                  type: string
+                valor_faturado:
+                  type: string
+                despesa:
+                  type: string
+                id_colaborador:
+                  type: integer
+                status:
+                  type: string
+
