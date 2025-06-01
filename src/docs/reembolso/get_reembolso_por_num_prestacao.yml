@@ -11,5 +11,48 @@ get:
   responses:
     '200':
       description: Dados do reembolso
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              colaborador:
+                type: string
+              empresa:
+                type: string
+              num_prestacao:
+                type: integer
+              descricao:
+                type: string
+              data:
+                type: string
+                format: date
+              tipo_reembolso:
+                type: string
+              centro_custo:
+                type: string
+              ordem_interna:
+                type: string
+              divisao:
+                type: string
+              pep:
+                type: string
+              moeda:
+                type: string
+              distancia_km:
+                type: number
+              valor_km:
+                type: number
+              valor_faturado:
+                type: number
+              despesa:
+                type: number
+              id_colaborador:
+                type: integer
+              status:
+                type: string
     '404':
       description: Reembolso não encontrado
+
