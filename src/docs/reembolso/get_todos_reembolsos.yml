@@ -1,81 +1,10 @@
+tags:
+  - Reembolsos
 get:
   summary: Listar todos os reembolsos
   description: Retorna uma lista com todos os reembolsos cadastrados no sistema.
-  tags:
-    - Reembolsos
   responses:
-    '200':
+    200:
       description: Lista de todos os reembolsos
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: integer
-                  example: 1
-                colaborador:
-                  type: string
-                  example: João da Silva
-                empresa:
-                  type: string
-                  example: Empresa X
-                num_prestacao:
-                  type: integer
-                  example: 202301
-                descricao:
-                  type: string
-                  example: Reembolso de viagem
-                data:
-                  type: string
-                  format: date
-                  example: 2025-05-01
-                tipo_reembolso:
-                  type: string
-                  example: Viagem
-                centro_custo:
-                  type: string
-                  example: CC123
-                ordem_interna:
-                  type: string
-                  example: OI456
-                divisao:
-                  type: string
-                  example: Financeiro
-                pep:
-                  type: string
-                  example: PEP789
-                moeda:
-                  type: string
-                  example: BRL
-                distancia_km:
-                  type: number
-                  format: float
-                  example: 123.45
-                valor_km:
-                  type: string
-                  example: "1.25"
-                valor_faturado:
-                  type: string
-                  example: "154.31"
-                despesa:
-                  type: string
-                  example: "99.99"
-                id_colaborador:
-                  type: integer
-                  example: 42
-                status:
-                  type: string
-                  example: Aprovado
-    '500':
+    500:
       description: Erro interno ao listar reembolsos
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-                example: Erro inesperado ao acessar o banco de dados
