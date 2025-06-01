@@ -46,7 +46,7 @@ def criar_reembolso():
 
     
 @bp_reembolso.route('/reembolsos/<int:num_prestacao>', methods=['GET'])
-# @swag_from('../docs/reembolso/get_reembolso_por_get_reembolso_por_num_prestacao.yml')
+@swag_from('../docs/reembolso/get_reembolso_por_get_reembolso_por_num_prestacao.yml')
 def visualizar_reembolso(num_prestacao):
     try:
         reembolso = Reembolso.query.filter_by(num_prestacao=num_prestacao).first()
