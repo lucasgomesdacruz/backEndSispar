@@ -20,16 +20,6 @@ from config import Config
 # Carrega variáveis do .env
 load_dotenv()
 
-swagger_template = {
-    "swagger": "2.0",
-    "info": {
-        "title": "API de Reembolsos",
-        "description": "Documentação da API para consulta de reembolsos.",
-        "version": "1.0.0"
-    },
-    "basePath": "/",  # ajuste se usar url_prefix em Blueprints
-}
-
 # Configuração Swagger
 swagger_config = {
     "headers": [],
